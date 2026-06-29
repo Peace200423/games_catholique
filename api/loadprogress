@@ -1,7 +1,8 @@
 // api/load-progress.js — GET /api/load-progress?uid=xxx
-import { sql } from "../lib/db.js";
+const { sql } = require("../lib/db.js");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "GET") return res.status(405).json({ error: "Méthode non autorisée" });
 
@@ -18,25 +19,11 @@ export default async function handler(req, res) {
       LIMIT 1
     `;
 
-    if (!rows.length) {
-      return res.status(404).json({ found: false });
-    }
+    if (!rows.length) return res.status(404).json({ found: false });
 
-    const row = rows[0];
-    return res.status(200).json({
-      found: true,
-      user_id:      row.user_id,
-      pseudo:       row.pseudo,
-      total_xp:     row.total_xp,
-      completed:    row.completed,
-      age_mode:     row.age_mode,
-      streak:       row.streak,
-      wrong_answers: row.wrong_answers,
-      updated_at:   row.updated_at
-    });
-
+    return res.status(200).json({ found: true, ...rows[0] });
   } catch (err) {
-    console.error("Erreur load-progress:", err);
+    console.error(err);
     return res.status(500).json({ error: "Erreur serveur" });
   }
-}
+};
