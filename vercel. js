@@ -1,5 +1,4 @@
 {
-  "version": 2,
   "headers": [
     {
       "source": "/api/(.*)",
@@ -9,11 +8,5 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
       ]
     }
-  ],
-  "rewrites": [
-    { "source": "/api/leaderboard", "destination": "/api/leaderboard.js" },
-    { "source": "/api/save-progress", "destination": "/api/save-progress.js" },
-    { "source": "/api/load-progress", "destination": "/api/load-progress.js" },
-    { "source": "/api/setup", "destination": "/api/setup.js" }
   ]
 }
