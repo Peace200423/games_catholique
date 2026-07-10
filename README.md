@@ -1,20 +1,43 @@
 # 🏛️ Le Chemin des Saints — Backend API
 
-Backend **Vercel + Neon PostgreSQL** pour le leaderboard mondial et la synchronisation de progression.
+Backend officiel du jeu **Le Chemin des Saints**.
+
+Cette API permet de :
+
+- 📈 Sauvegarder la progression des joueurs
+- 🏆 Gérer le classement mondial (Leaderboard)
+- ☁️ Synchroniser les données entre plusieurs appareils
+- 🗄️ Stocker les informations dans PostgreSQL (Neon)
+
+Le projet est entièrement compatible avec **Vercel Serverless Functions** et **Neon PostgreSQL**.
 
 ---
 
-## 📋 Architecture
+# ✨ Fonctionnalités
+
+- Sauvegarde automatique de la progression
+- Classement mondial des joueurs
+- Synchronisation Cloud
+- API REST simple
+- Déploiement 100 % gratuit
+- Compatible Vercel + Neon
+
+---
+
+# 📂 Structure du projet
 
 ```
 chemin-des-saints-api/
+│
 ├── api/
-│   ├── setup.js           ← Crée les tables (1 seule fois)
-│   ├── leaderboard.js     ← GET  /api/leaderboard
-│   ├── save-progress.js   ← POST /api/save-progress
-│   └── load-progress.js   ← GET  /api/load-progress?uid=xxx
+│   ├── setup.js            # Création des tables (à utiliser une seule fois)
+│   ├── leaderboard.js      # GET  /api/leaderboard
+│   ├── save-progress.js    # POST /api/save-progress
+│   └── load-progress.js    # GET  /api/load-progress?uid=xxx
+│
 ├── lib/
-│   └── db.js              ← Connexion Neon (partagée)
+│   └── db.js               # Connexion PostgreSQL (Neon)
+│
 ├── package.json
 ├── vercel.json
 └── README.md
@@ -22,121 +45,246 @@ chemin-des-saints-api/
 
 ---
 
-## 🚀 Installation pas-à-pas
+# 🚀 Déploiement
 
-### Étape 1 — Créer la base Neon (gratuit)
+## 1. Créer une base PostgreSQL (Neon)
 
-1. Va sur [neon.tech](https://neon.tech) → **"Sign up"** (GitHub suffit)
-2. Crée un projet : **"chemin-des-saints"**
-3. Copie la **Connection string** (format : `postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require`)
+Créer gratuitement un compte :
 
-### Étape 2 — Déployer sur Vercel (gratuit)
+👉 https://neon.tech
+
+Créer un nouveau projet :
+
+```
+chemin-des-saints
+```
+
+Puis copier votre **DATABASE_URL**
+
+Exemple :
+
+```
+postgresql://user:password@ep-xxxx.eu-central-1.aws.neon.tech/neondb?sslmode=require
+```
+
+---
+
+## 2. Déployer sur Vercel
+
+Installer Vercel CLI :
 
 ```bash
-# Installer Vercel CLI
 npm install -g vercel
+```
 
-# Dans le dossier du projet
-cd chemin-des-saints-api
+Se connecter :
+
+```bash
 vercel login
-vercel --prod
 ```
 
-Vercel va te demander :
-- **Project name** : `chemin-des-saints`
-- **Framework** : None (laisse vide)
-- **Build command** : laisse vide
-- **Output directory** : laisse vide
+Puis déployer :
 
-### Étape 3 — Configurer les variables d'environnement
-
-Dans le **dashboard Vercel** → Settings → Environment Variables :
-
-| Variable | Valeur |
-|---|---|
-| `DATABASE_URL` | `postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require` |
-| `SETUP_KEY` | Un mot de passe secret de ton choix ex: `saints2024` |
-
-Puis **redéployer** :
 ```bash
 vercel --prod
 ```
 
-### Étape 4 — Initialiser la base de données
+Lors de la configuration :
 
-Ouvre dans ton navigateur :
+| Paramètre | Valeur |
+|------------|---------|
+| Framework | None |
+| Build Command | *(laisser vide)* |
+| Output Directory | *(laisser vide)* |
+
+---
+
+## 3. Ajouter les variables d'environnement
+
+Depuis :
+
 ```
-https://chemin-des-saints.vercel.app/api/setup?key=saints2024
+Vercel Dashboard
+→ Settings
+→ Environment Variables
 ```
 
-Tu dois voir :
+Ajouter :
+
+| Variable | Description |
+|-----------|-------------|
+| DATABASE_URL | URL PostgreSQL Neon |
+| SETUP_KEY | Clé secrète permettant de créer la base |
+
+Exemple :
+
+```
+DATABASE_URL=postgresql://....
+SETUP_KEY=saints2026
+```
+
+Une fois ajouté :
+
+```bash
+vercel --prod
+```
+
+---
+
+## 4. Initialiser la base
+
+Ouvrir :
+
+```
+https://votre-projet.vercel.app/api/setup?key=saints2026
+```
+
+Réponse attendue :
+
 ```json
-{ "ok": true, "message": "Tables créées avec succès !" }
+{
+  "ok": true,
+  "message": "Tables créées avec succès !"
+}
 ```
-
-**⚠️ Supprime ensuite `api/setup.js` et redéploie** (sécurité).
-
-### Étape 5 — Mettre à jour l'URL dans le HTML du jeu
-
-Dans `le_chemin_des_saints_v7.html`, cherche :
-```javascript
-const API_BASE = "https://chemin-des-saints.vercel.app/api";
-```
-
-Remplace par ton URL Vercel réelle.
 
 ---
 
-## 🧪 Tester les routes
+## ⚠️ Important
+
+Une fois les tables créées :
+
+Supprimer le fichier
+
+```
+api/setup.js
+```
+
+Puis redéployer le projet.
+
+Cela évite qu'une personne puisse recréer ou modifier la base.
+
+---
+
+# 🔗 Intégration dans le jeu
+
+Dans le fichier HTML :
+
+```javascript
+const API_BASE = "https://votre-projet.vercel.app/api";
+```
+
+Remplacer simplement par l'URL de votre projet Vercel.
+
+---
+
+# 🧪 Tester l'API
+
+## Leaderboard
 
 ```bash
-# Leaderboard
-curl https://chemin-des-saints.vercel.app/api/leaderboard
-
-# Sauvegarder un score
-curl -X POST https://chemin-des-saints.vercel.app/api/save-progress \
-  -H "Content-Type: application/json" \
-  -d '{"user_id":"test_123","pseudo":"Jean Marie","total_xp":450,"completed":{},"age_mode":"adulte","streak":3}'
-
-# Charger la progression
-curl https://chemin-des-saints.vercel.app/api/load-progress?uid=test_123
+curl https://votre-projet.vercel.app/api/leaderboard
 ```
 
 ---
 
-## 🗄️ Schéma SQL
+## Sauvegarder une progression
+
+```bash
+curl -X POST https://votre-projet.vercel.app/api/save-progress \
+-H "Content-Type: application/json" \
+-d '{
+"user_id":"test123",
+"pseudo":"Jean Marie",
+"total_xp":450,
+"completed":{},
+"age_mode":"adulte",
+"streak":3
+}'
+```
+
+---
+
+## Charger une progression
+
+```bash
+curl https://votre-projet.vercel.app/api/load-progress?uid=test123
+```
+
+---
+
+# 🗄️ Structure de la base de données
 
 ```sql
--- Table principale de progression
 CREATE TABLE progress (
-  id            SERIAL PRIMARY KEY,
-  user_id       TEXT NOT NULL UNIQUE,  -- UUID généré côté client
-  pseudo        TEXT,                  -- Pseudo public (leaderboard)
-  total_xp      INTEGER DEFAULT 0,
-  completed     JSONB DEFAULT '{}',    -- {stationId: true, ...}
-  age_mode      TEXT DEFAULT 'adulte', -- junior/adulte/senior/lecture
-  streak        INTEGER DEFAULT 0,
-  wrong_answers JSONB DEFAULT '{}',    -- Questions ratées pour révision
-  updated_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+id SERIAL PRIMARY KEY,
+
+user_id TEXT UNIQUE NOT NULL,
+
+pseudo TEXT,
+
+total_xp INTEGER DEFAULT 0,
+
+completed JSONB DEFAULT '{}',
+
+age_mode TEXT DEFAULT 'adulte',
+
+streak INTEGER DEFAULT 0,
+
+wrong_answers JSONB DEFAULT '{}',
+
+updated_at TIMESTAMPTZ DEFAULT NOW()
+
 );
 ```
 
 ---
 
-## 💰 Coûts
+# 📡 Endpoints disponibles
 
-| Service | Plan gratuit | Limite |
-|---|---|---|
-| Vercel | Hobby (gratuit) | 100 GB-h/mois |
-| Neon | Free (gratuit) | 0.5 Go, 1 branche |
-
-**Conclusion : 100% gratuit** pour un usage scolaire ou communautaire.
+| Méthode | Endpoint | Description |
+|----------|----------|-------------|
+| GET | /api/leaderboard | Retourne le classement mondial |
+| POST | /api/save-progress | Sauvegarde la progression |
+| GET | /api/load-progress | Charge la progression d'un joueur |
+| GET | /api/setup | Initialise la base (à supprimer ensuite) |
 
 ---
 
-## 🔧 Prochaines évolutions possibles
+# 💸 Coût
 
-- Authentification avec Clerk ou NextAuth
-- Export CSV des scores pour suivi pédagogique
-- Statistiques : questions les plus ratées, taux de réussite par chapitre
-- Notifications par email (resend.com) pour les nouveaux records
+| Service | Plan |
+|----------|------|
+| Vercel | Gratuit |
+| Neon PostgreSQL | Gratuit |
+
+Pour un projet éducatif ou associatif, le backend fonctionne entièrement sans frais.
+
+---
+
+# 🛣️ Feuille de route
+
+Fonctionnalités prévues :
+
+- 🔐 Authentification des joueurs
+- ☁️ Sauvegarde multi-appareils
+- 📊 Tableau de statistiques
+- 📈 Progression détaillée
+- 🏅 Succès (Achievements)
+- 📤 Export CSV
+- 📧 Notifications
+- 👥 Classements par paroisse
+- 🏛️ Classements par diocèse
+- 🌍 Classement mondial
+
+---
+
+# ❤️ À propos
+
+**Le Chemin des Saints** est un jeu catholique conçu pour rendre l'apprentissage de la foi plus interactif grâce aux récits bibliques, aux quiz et à une progression ludique.
+
+Développé avec ❤️ au Bénin.
+
+> *"Tout ce que vous faites, faites-le pour la gloire de Dieu."*  
+> **1 Corinthiens 10:31**
